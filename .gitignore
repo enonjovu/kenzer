@@ -1,0 +1,32 @@
+# Composer dependencies
+/vendor/
+/composer.lock
+
+# Environment variables
+.env
+
+# PHPStorm project files
+/.idea/
+
+# Node modules (if using Node.js or frontend dependencies)
+/node_modules/
+
+# Operating System files
+.DS_Store
+Thumbs.db
+
+# Log files
+*.log
+
+# Cache
+/cache/
+/tmp/
+
+# PHPUnit
+phpunit.xml
+phpunit.xml.dist
+
+# Other IDE settings
+*.vscode/
+
+/storage/
