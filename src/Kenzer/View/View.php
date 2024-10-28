@@ -1,6 +1,9 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Kenzer\View;
+
 use Kenzer\Application\Application;
 use Kenzer\Http\Response;
 use Kenzer\Interface\Data\Responsable;
@@ -18,7 +21,6 @@ class View implements
     private ?array $layoutViewParams = [];
     private array $contentBlocks = [];
     private ?string $currentBlockName = null;
-
 
     public function __construct(
         private string $path,
@@ -39,14 +41,14 @@ class View implements
         return new static($path, $params);
     }
 
-    protected function getViewFullPath() : string
+    protected function getViewFullPath(): string
     {
-        return FileManager::joinPaths(BASE_DIRECTORY, 'views', sprintf("%s.view.php", $this->path));
+        return FileManager::joinPaths(BASE_DIRECTORY, 'views', sprintf('%s.view.php', $this->path));
     }
 
     private function getCacheFileName()
     {
-        return FileManager::joinPaths(STORAGE_DIRECTORY, 'cache/views', sprintf("%s.php", md5($this->getViewFullPath())));
+        return FileManager::joinPaths(STORAGE_DIRECTORY, 'cache/views', sprintf('%s.php', md5($this->getViewFullPath())));
     }
 
     public function startBlockContentCapture(string $name)
@@ -66,7 +68,7 @@ class View implements
         $this->currentBlockName = null;
     }
 
-    public function getBlockContent(string $name) : ?string
+    public function getBlockContent(string $name): ?string
     {
         $output = array_key_exists($name, $this->contentBlocks) ? $this->contentBlocks[$name] : null;
 
@@ -79,9 +81,8 @@ class View implements
         $this->layoutViewParams = $options;
     }
 
-    private function compileContent(string $content) : string
+    private function compileContent(string $content): string
     {
-
         $content = preg_replace(
             '/\{\{\s*(.*?)\s*\}\}/',
             '<?php echo $1 ?>',
@@ -93,7 +94,7 @@ class View implements
         return $content;
     }
 
-    private function cacheFile() : void
+    private function cacheFile(): void
     {
         $content = FileManager::getFileContent($this->getViewFullPath());
         $content = $this->compileContent($content);
@@ -104,13 +105,13 @@ class View implements
             . $content
             . PHP_EOL
             . PHP_EOL
-            . sprintf("<?php //PATH:%s ?>", $this->getViewFullPath())
+            . sprintf('<?php //PATH:%s ?>', $this->getViewFullPath())
             . PHP_EOL;
 
         FileManager::createFile($this->getCacheFileName(), $content);
     }
 
-    public function getSlotContent() : string
+    public function getSlotContent(): string
     {
         return $this->slotContent ?? '';
     }
@@ -122,9 +123,8 @@ class View implements
         return $this;
     }
 
-    public function render() : string
+    public function render(): string
     {
-
         $this->cacheFile();
 
         ob_start();
@@ -143,12 +143,12 @@ class View implements
         return (string) $data;
     }
 
-    function __tostring() : string
+    public function __tostring(): string
     {
         return $this->render();
     }
 
-    function toResponse() : ResponseInterface
+    public function toResponse(): ResponseInterface
     {
         return new Response($this->render());
     }

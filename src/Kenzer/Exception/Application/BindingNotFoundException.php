@@ -1,7 +1,8 @@
 <?php
 
-namespace Kenzer\Exception\Application;
+declare(strict_types=1);
 
+namespace Kenzer\Exception\Application;
 
 class BindingNotFoundException extends ContainerException
 {

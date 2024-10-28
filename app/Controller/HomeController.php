@@ -1,8 +1,10 @@
 <?php
 
+declare(strict_types=1);
+
 namespace App\Controller;
+
 use Kenzer\Http\Request;
-use Kenzer\Validation\Validator;
 use Kenzer\View\View;
 
 class HomeController
@@ -14,6 +16,5 @@ class HomeController
 
     public function somepoint(Request $request)
     {
-
     }
 }

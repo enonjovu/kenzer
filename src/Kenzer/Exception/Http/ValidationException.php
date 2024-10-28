@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Kenzer\Exception\Http;
 
 use Exception;
@@ -10,10 +12,10 @@ class ValidationException extends Exception
         public readonly array $data = [],
         public readonly array $errors = [],
     ) {
-        parent::__construct("validation exception", 422, null);
+        parent::__construct('validation exception', 422, null);
     }
 
-    public static function create(array $data = [], array $errors = []) : self
+    public static function create(array $data = [], array $errors = []): self
     {
         return new static($data, $errors);
     }

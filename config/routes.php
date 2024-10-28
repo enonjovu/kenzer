@@ -1,11 +1,13 @@
 <?php
+
+declare(strict_types=1);
 use App\Controller\HomeController;
 use App\Controller\ProfileController;
 use App\Controller\ProjectsController;
 use App\Controller\TeamsController;
 use Kenzer\Routing\Router;
 
-return function (Router $router) {
+return function(Router $router) {
     $router->get('/', HomeController::class);
 
     $router->get('/profile', [ProfileController::class, 'index']);

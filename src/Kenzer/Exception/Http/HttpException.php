@@ -1,6 +1,9 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Kenzer\Exception\Http;
+
 use Exception;
 
 class HttpException extends Exception
@@ -12,7 +15,7 @@ class HttpException extends Exception
         parent::__construct($message, $code);
     }
 
-    public function getStatusCode() : int
+    public function getStatusCode(): int
     {
         return $this->code;
     }

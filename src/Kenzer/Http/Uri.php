@@ -1,88 +1,90 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Kenzer\Http;
+
 use Psr\Http\Message\UriInterface;
 
 class Uri implements UriInterface
 {
-    public function getAuthority() : string
+    public function getAuthority(): string
     {
-        return "";
+        return '';
     }
 
-    public function getFragment() : string
+    public function getFragment(): string
     {
-        return "";
+        return '';
     }
 
-    public function getHost() : string
+    public function getHost(): string
     {
-        return "";
+        return '';
     }
 
-    public function getPath() : string
+    public function getPath(): string
     {
-        return "";
+        return '';
     }
 
-    public function getPort() : int|null
+    public function getPort(): int|null
     {
-        return "";
+        return '';
     }
 
-    public function getQuery() : string
+    public function getQuery(): string
     {
-        return "";
+        return '';
     }
 
-    public function getScheme() : string
+    public function getScheme(): string
     {
-        return "";
+        return '';
     }
 
-    public function getUserInfo() : string
+    public function getUserInfo(): string
     {
-        return "";
+        return '';
     }
 
-    public function withFragment(string $fragment) : UriInterface
+    public function withFragment(string $fragment): UriInterface
     {
-        return "";
+        return '';
     }
 
-    public function withHost(string $host) : UriInterface
+    public function withHost(string $host): UriInterface
     {
-        return "";
+        return '';
     }
 
-    public function withPath(string $path) : UriInterface
+    public function withPath(string $path): UriInterface
     {
-        return "";
+        return '';
     }
 
-    public function withPort(int|null $port) : UriInterface
+    public function withPort(int|null $port): UriInterface
     {
-        return "";
+        return '';
     }
 
-    public function withQuery(string $query) : UriInterface
+    public function withQuery(string $query): UriInterface
     {
-        return "";
+        return '';
     }
 
-    public function withScheme(string $scheme) : UriInterface
+    public function withScheme(string $scheme): UriInterface
     {
-        return "";
+        return '';
     }
 
-    public function withUserInfo(string $user, string|null $password = null) : UriInterface
+    public function withUserInfo(string $user, string|null $password = null): UriInterface
     {
-        return "";
+        return '';
     }
 
-    public function __tostring() : string
+    public function __tostring(): string
     {
-        return "";
+        return '';
     }
-
 }

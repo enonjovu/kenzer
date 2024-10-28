@@ -1,6 +1,9 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Kenzer\Http;
+
 use Kenzer\Interface\Data\Arrayable;
 use Kenzer\Interface\Data\Jsonable;
 use Stringable;

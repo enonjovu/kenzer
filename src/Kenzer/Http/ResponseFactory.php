@@ -1,6 +1,9 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Kenzer\Http;
+
 use Exception;
 use Kenzer\Interface\Data\Arrayable;
 use Kenzer\Interface\Data\Jsonable;
@@ -10,19 +13,19 @@ use Stringable;
 
 class ResponseFactory
 {
-    public static function make(mixed $content = "", int $statuCode = 200, array $headers = [])
+    public static function make(mixed $content = '', int $statuCode = 200, array $headers = [])
     {
         return (new static($content, $statuCode, $headers))->getResponse();
     }
 
     public function __construct(
-        private mixed $content = "",
+        private mixed $content = '',
         private int $statuCode = 200,
         private array $headers = []
     ) {
     }
 
-    public function getResponse() : ResponseInterface
+    public function getResponse(): ResponseInterface
     {
         if (is_string($this->content)) {
             return new Response($this->content, $this->statuCode, $this->headers);
@@ -52,6 +55,6 @@ class ResponseFactory
             return new JsonResponse($this->content, $this->statuCode, $this->headers);
         }
 
-        throw new Exception("invalid response content");
+        throw new Exception('invalid response content');
     }
 }

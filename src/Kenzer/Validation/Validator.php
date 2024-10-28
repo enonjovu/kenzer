@@ -1,6 +1,9 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Kenzer\Validation;
+
 use Kenzer\Application\Application;
 use Kenzer\Exception\Http\ValidationException;
 use Kenzer\Interface\Validation\RuleInterface;
@@ -34,11 +37,9 @@ class Validator
         $rules = $this->compiledRules[$field];
 
         foreach ($rules as $rule) {
-
             if (! $rule->passes($value)) {
                 $this->errors[$field][] = $rule->fail($field);
             }
-
         }
 
         if (empty($this->errors[$field])) {
@@ -86,7 +87,7 @@ class Validator
         return array_intersect_key($this->data, $this->errors);
     }
 
-    public static function create($data = [], $rules = []) : static
+    public static function create($data = [], $rules = []): static
     {
         return new static($data, $rules);
     }
@@ -103,8 +104,6 @@ class Validator
                 }
 
                 if (is_string($rule)) {
-
-
                     if (class_exists($rule) && Application::getInstance()->get($rule) instanceof RuleInterface) {
                         $compiledRules[$key][] = Application::getInstance()->get($rule);
                         continue;
@@ -114,16 +113,15 @@ class Validator
                         continue;
                     }
 
-
-                    [$rule, $params] = explode(":", $rule, 2);
+                    [$rule, $params] = explode(':', $rule, 2);
 
                     $params ??= [];
 
                     if (is_string($params)) {
-                        $params = explode(",", $params);
+                        $params = explode(',', $params);
                     }
 
-                    $compiledRules[$key][] = $params ? new $this->alias[$rule]($params) : new $this->alias[$rule];
+                    $compiledRules[$key][] = $params ? new $this->alias[$rule]($params) : new $this->alias[$rule]();
                 }
             }
         }

@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Kenzer\View;
 
 class ViewContentCompiler
@@ -21,13 +23,13 @@ class ViewContentCompiler
         $this->replacements[$name] = $callback;
     }
 
-    public function process(string $subject) : string
+    public function process(string $subject): string
     {
         // Regex to match directives with or without parentheses
         $pattern = '/@(' . implode('|', array_keys($this->replacements)) . ')(\(\s*(.*?)\s*\))?/';
 
         // Callback to replace the directive match based on the corresponding logic
-        $callback = function ($matches) {
+        $callback = function($matches) {
             $directive = $matches[1];  // Directive name (e.g., 'if', 'endif')
             $hasExpression = isset($matches[3]);  // Check if an expression exists
             $expression = $hasExpression ? $matches[3] : null;  // Get the expression if it exists

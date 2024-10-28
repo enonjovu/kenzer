@@ -1,4 +1,6 @@
 <?php
+
+declare(strict_types=1);
 use Kenzer\Application\Application;
 use Kenzer\Http\Request;
 
@@ -10,5 +12,3 @@ require_once __DIR__ . '/../vendor/autoload.php';
 $app = Application::make(BASE_DIRECTORY);
 
 $app->handleRequest(new Request());
-
-

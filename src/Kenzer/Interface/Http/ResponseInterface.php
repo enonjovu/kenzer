@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Kenzer\Interface\Http;
 
 interface ResponseInterface
@@ -68,16 +70,15 @@ interface ResponseInterface
     public const HTTP_NOT_EXTENDED = 510;                                                // RFC2774
     public const HTTP_NETWORK_AUTHENTICATION_REQUIRED = 511;                             // RFC6585
 
+    public function send(): never;
+    public function getStatusCode(): int;
+    public function getContent(): string;
+    public function getHeaders(): array;
+    public function getHeader(string $key): ?string;
+    public function setContext(string $content = ''): void;
+    public function setStatusCode(int $code = 200): void;
 
-    public function send() : never;
-    public function getStatusCode() : int;
-    public function getContent() : string;
-    public function getHeaders() : array;
-    public function getHeader(string $key) : ?string;
-    public function setContext(string $content = "") : void;
-    public function setStatusCode(int $code = 200) : void;
+    public function setHeader(string $key, string $value): void;
 
-    public function setHeader(string $key, string $value) : void;
-
-    public function hasHeader(string $key) : bool;
+    public function hasHeader(string $key): bool;
 }

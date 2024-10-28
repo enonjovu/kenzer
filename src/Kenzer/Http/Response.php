@@ -1,6 +1,9 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Kenzer\Http;
+
 use Kenzer\Interface\Http\ResponseInterface;
 
 class Response implements ResponseInterface
@@ -71,38 +74,38 @@ class Response implements ResponseInterface
     ];
 
     public function __construct(
-        private string $content = "",
+        private string $content = '',
         private int $statusCode = 200,
         private array $headers = [],
     ) {
     }
 
-    public function getContent() : string
+    public function getContent(): string
     {
         return $this->content;
     }
 
-    public function hasHeader(string $key) : bool
+    public function hasHeader(string $key): bool
     {
         return array_key_exists($key, $this->headers);
     }
 
-    public function getHeader(string $key) : ?string
+    public function getHeader(string $key): ?string
     {
         return $this->hasHeader($key) ? $this->headers[$key] : null;
     }
 
-    public function getHeaders() : array
+    public function getHeaders(): array
     {
         return $this->headers;
     }
 
-    public function getStatusCode() : int
+    public function getStatusCode(): int
     {
         return $this->statusCode;
     }
 
-    public function send() : never
+    public function send(): never
     {
         $this->sendHeaders();
         $this->sendContent();
@@ -110,31 +113,31 @@ class Response implements ResponseInterface
         exit(0);
     }
 
-    public function setContext(string $content = '') : void
+    public function setContext(string $content = ''): void
     {
         $this->content = $content;
     }
 
-    public function setHeader(string $key, string $value) : void
+    public function setHeader(string $key, string $value): void
     {
         $this->headers[$key] = $value;
     }
 
-    public function setStatusCode(int $code = 200) : void
+    public function setStatusCode(int $code = 200): void
     {
         $this->statusCode = $code;
     }
 
-    protected function sendHeaders() : void
+    protected function sendHeaders(): void
     {
         http_response_code($this->getStatusCode());
 
         foreach ($this->getHeaders() as $key => $value) {
-            header(sprintf("%s:%s", $key, $value));
+            header(sprintf('%s:%s', $key, $value));
         }
     }
 
-    protected function sendContent() : void
+    protected function sendContent(): void
     {
         echo $this->content;
     }

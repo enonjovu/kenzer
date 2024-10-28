@@ -1,14 +1,13 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Kenzer\Application;
+
 use Kenzer\Exception\Application\ApplicationException;
 use Kenzer\Http\HttpKernel;
-use Kenzer\Http\Request;
-use Kenzer\Http\ResponseFactory;
-use Kenzer\Interface\Application\Kernel;
 use Kenzer\Interface\Http\HttpKernelInterface;
 use Kenzer\Interface\Http\RequestInterface;
-use Kenzer\Interface\Routing\RouteInterface;
 use Kenzer\Interface\Routing\RouterInterface;
 use Kenzer\Routing\Router;
 use Kenzer\View\ViewContentCompiler;
@@ -35,13 +34,12 @@ class Application extends Container
         $loadRoutesCallback = require_once $routesCallbackPath;
 
         if (! is_callable($loadRoutesCallback)) {
-            throw new ApplicationException("routes configuration must return a closure");
+            throw new ApplicationException('routes configuration must return a closure');
         }
         $router->loadFromClousure($loadRoutesCallback);
 
         $this->singleton(RouterInterface::class, $router);
     }
-
 
     protected function loadHttpKernelConfiguration()
     {
@@ -53,14 +51,12 @@ class Application extends Container
 
     private function bootBindings()
     {
-        $this->singleton(ViewContentCompiler::class, function () {
-
+        $this->singleton(ViewContentCompiler::class, function() {
             $config = require_once __DIR__ . '/config/view.php';
 
             return ViewContentCompiler::create($config['directives']);
         });
     }
-
 
     private function boot()
     {
@@ -69,12 +65,12 @@ class Application extends Container
         $this->loadHttpKernelConfiguration();
     }
 
-    public static function make(string $basePath) : Application
+    public static function make(string $basePath): Application
     {
         return self::$instance ??= new static($basePath);
     }
 
-    public static function getInstance() : ?Application
+    public static function getInstance(): ?Application
     {
         return static::$instance;
     }

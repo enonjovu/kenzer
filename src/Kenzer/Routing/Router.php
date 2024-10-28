@@ -1,6 +1,9 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Kenzer\Routing;
+
 use Kenzer\Exception\Http\HttpException;
 use Kenzer\Interface\Http\RequestInterface;
 use Kenzer\Interface\Routing\RouteInterface;
@@ -50,16 +53,15 @@ class Router implements RouterInterface
         $this->addRoute('delete', $path, $action);
     }
 
-    public function dispatch(RequestInterface $request) : Route
+    public function dispatch(RequestInterface $request): Route
     {
         $filteredRoutes = array_filter(
             $this->routes,
             fn (RouteInterface $route) => $route->matchFromRequest($request)
         );
 
-
         if (empty($filteredRoutes)) {
-            throw new HttpException(404, "Not Found");
+            throw new HttpException(404, 'Not Found');
         }
 
         $filteredRoutes = array_filter(
@@ -67,9 +69,8 @@ class Router implements RouterInterface
             fn (RouteInterface $route) => $request->methodIs($route->getMethod())
         );
 
-
         if (empty($filteredRoutes)) {
-            throw new HttpException(409, "Method Not allowed");
+            throw new HttpException(409, 'Method Not allowed');
         }
 
         $filteredRoutes = [...$filteredRoutes];

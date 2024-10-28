@@ -1,6 +1,9 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Kenzer\Application;
+
 use Closure;
 use Kenzer\Exception\Application\BindingNotFoundException;
 use Kenzer\Exception\Application\ContainerException;
@@ -14,7 +17,9 @@ class Container
 
     /**
      * @template T
+     *
      * @param class-string<T> $id
+     *
      * @return T
      */
     public function get(string $id)
@@ -27,7 +32,6 @@ class Container
 
         return $this->resolve($id);
     }
-
 
     protected function resolveEntry(string $id)
     {
@@ -44,29 +48,26 @@ class Container
         return $entry;
     }
 
-
     protected function resolveSingletonEntry(string $id)
     {
         return $this->singletonEntries[$id] ??= $this->resolveEntry($id);
     }
 
-
-    public function has(string $id) : bool
+    public function has(string $id): bool
     {
         return isset($this->entries[$id]);
     }
 
-    public function bind(string $id, mixed $concrete) : void
+    public function bind(string $id, mixed $concrete): void
     {
         $this->entries[$id] = $concrete;
     }
 
-    public function singleton(string $id, mixed $concrete) : void
+    public function singleton(string $id, mixed $concrete): void
     {
         $this->entries[$id] = $concrete;
         $this->singletonEntries[$id] = null;
     }
-
 
     public function call(mixed $callable, array $options = [])
     {
@@ -90,7 +91,7 @@ class Container
 
         if (is_array($callable)) {
             if (count($callable) != 2) {
-                throw new ContainerException("an array must have two items the class and the method");
+                throw new ContainerException('an array must have two items the class and the method');
             }
 
             [$classString, $method] = $callable;
@@ -107,7 +108,6 @@ class Container
 
             return $this->callClassMethod($class, $method, $options);
         }
-
 
         throw new ContainerException("failed to resolve $callable");
     }
@@ -152,14 +152,14 @@ class Container
         $constructor = $reflectionClass->getConstructor();
 
         if (! $constructor) {
-            return new $id;
+            return new $id();
         }
 
         // 3. Inspect the constructor parameters (dependencies)
         $parameters = $constructor->getParameters();
 
         if (! $parameters) {
-            return new $id;
+            return new $id();
         }
 
         // 4. If the constructor parameter is a class then try to resolve that class using the container
@@ -171,7 +171,7 @@ class Container
     protected function getDependencies(string $id, array $reflectionParameters, array $options = [])
     {
         return array_map(
-            function (\ReflectionParameter $param) use ($id, &$options) {
+            function(\ReflectionParameter $param) use ($id, &$options) {
                 $name = $param->getName();
                 $type = $param->getType();
 

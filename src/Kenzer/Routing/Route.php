@@ -1,10 +1,10 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Kenzer\Routing;
-use Kenzer\Http\Response;
-use Kenzer\Interface\Data\Responsable;
+
 use Kenzer\Interface\Http\RequestInterface;
-use Kenzer\Interface\Http\ResponseInterface;
 use Kenzer\Interface\Routing\RouteInterface;
 
 final class Route implements
@@ -26,7 +26,7 @@ final class Route implements
         $this->params = [];
     }
 
-    public function match(string $path) : bool
+    public function match(string $path): bool
     {
         $match = preg_match($this->path, $path);
 
@@ -37,14 +37,13 @@ final class Route implements
         return (bool) $match;
     }
 
-    public function matchFromRequest(RequestInterface $request) : bool
+    public function matchFromRequest(RequestInterface $request): bool
     {
         return $this->match($request->getPath());
     }
 
-    public function getMethod() : string
+    public function getMethod(): string
     {
-
         return $this->method;
     }
 
@@ -62,13 +61,12 @@ final class Route implements
         return $this->hasParameter($key) ? $this->params[$key] : null;
     }
 
-    public function hasParameter(string $key) : bool
+    public function hasParameter(string $key): bool
     {
         return array_key_exists($key, $this->params);
     }
 
-
-    public function getAction() : mixed
+    public function getAction(): mixed
     {
         return $this->action;
     }
@@ -79,7 +77,7 @@ final class Route implements
         return '#^' . preg_replace('#\{([a-zA-Z0-9_]+)\}#', '(?<$1>[a-zA-Z0-9_]+)', $path) . '$#';
     }
 
-    public function getParams() : array
+    public function getParams(): array
     {
         return $this->params;
     }
