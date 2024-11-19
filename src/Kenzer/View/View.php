@@ -4,36 +4,49 @@ declare(strict_types=1);
 
 namespace Kenzer\View;
 
-use Kenzer\Application\Application;
 use Kenzer\Http\Response;
 use Kenzer\Interface\Data\Responsable;
 use Kenzer\Interface\Http\ResponseInterface;
+use Kenzer\Utility\AttributeBag;
 use Kenzer\Utility\FileManager;
 use Stringable;
 
-class View implements
-    Stringable,
-    Responsable
+class View implements Responsable, Stringable
 {
-    private ViewContentCompiler $compiler;
     private ?string $layoutViewPath = null;
+
     private ?string $slotContent = null;
+
     private ?array $layoutViewParams = [];
+
     private array $contentBlocks = [];
+
     private ?string $currentBlockName = null;
+
+    private ViewCompilerEngine $engine;
+
+    private static ?AttributeBag $globalParams = null;
+
+    private AttributeBag $params;
 
     public function __construct(
         private string $path,
-        private array $params = []
+        array $params = []
     ) {
-        $this->compiler = Application::getInstance()
-            ->get(ViewContentCompiler::class);
-
         $this->layoutViewPath = null;
         $this->layoutViewParams = [];
         $this->contentBlocks = [];
         $this->currentBlockName = null;
         $this->slotContent = null;
+        $this->params = new AttributeBag($params);
+
+        $this->engine = new ViewCompilerEngine(
+            $this->getViewFullPath(),
+            $this->getCacheFileName()
+        );
+
+        static::$globalParams ??= new AttributeBag([]);
+
     }
 
     public static function make(string $path, array $params = [])
@@ -75,40 +88,16 @@ class View implements
         return $output;
     }
 
+    public static function putGlobal(string $key, mixed $value): void
+    {
+        static::$globalParams ??= new AttributeBag([]);
+        static::$globalParams->set($key, $value);
+    }
+
     public function setLayoutViewPath(string $path, array $options = [])
     {
         $this->layoutViewPath = $path;
         $this->layoutViewParams = $options;
-    }
-
-    private function compileContent(string $content): string
-    {
-        $content = preg_replace(
-            '/\{\{\s*(.*?)\s*\}\}/',
-            '<?php echo $1 ?>',
-            $content
-        );
-
-        $content = $this->compiler->process($content);
-
-        return $content;
-    }
-
-    private function cacheFile(): void
-    {
-        $content = FileManager::getFileContent($this->getViewFullPath());
-        $content = $this->compileContent($content);
-
-        $content = '<?php /** @var \Kenzer\View\View $this */ ?>'
-            . PHP_EOL
-            . PHP_EOL
-            . $content
-            . PHP_EOL
-            . PHP_EOL
-            . sprintf('<?php //PATH:%s ?>', $this->getViewFullPath())
-            . PHP_EOL;
-
-        FileManager::createFile($this->getCacheFileName(), $content);
     }
 
     public function getSlotContent(): string
@@ -125,11 +114,13 @@ class View implements
 
     public function render(): string
     {
-        $this->cacheFile();
+        $this->engine->execute();
 
         ob_start();
 
-        extract($this->params);
+        $viewData = $this->params->extend(static::$globalParams)->toArray();
+
+        extract($viewData);
 
         require_once $this->getCacheFileName();
 
@@ -143,7 +134,7 @@ class View implements
         return (string) $data;
     }
 
-    public function __tostring(): string
+    public function __toString(): string
     {
         return $this->render();
     }

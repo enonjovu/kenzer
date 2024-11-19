@@ -8,7 +8,7 @@ use Kenzer\Http\Request;
 
 class AuthSessionController
 {
-    public function create()
+    public function create(Request $request)
     {
         return view('pages/auth/login');
     }
@@ -18,8 +18,5 @@ class AuthSessionController
         dd($request);
     }
 
-    public function destroy()
-    {
-
-    }
+    public function destroy() {}
 }

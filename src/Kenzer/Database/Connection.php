@@ -4,6 +4,4 @@ declare(strict_types=1);
 
 namespace Kenzer\Database;
 
-class Connection
-{
-}
+class Connection {}

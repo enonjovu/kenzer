@@ -6,6 +6,4 @@ namespace Kenzer\Exception\Application;
 
 use Exception;
 
-class ContainerException extends Exception
-{
-}
+class ContainerException extends Exception {}

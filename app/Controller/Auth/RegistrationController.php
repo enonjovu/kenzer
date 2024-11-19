@@ -11,8 +11,5 @@ class RegistrationController
         return view('pages/auth/register');
     }
 
-    public function store()
-    {
-
-    }
+    public function store() {}
 }

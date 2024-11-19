@@ -30,30 +30,33 @@ class Router implements RouterInterface
 
     protected function addRoute(string $methood, string $path, mixed $action)
     {
-        $this->routes[] = new Route($methood, $path, $action);
+        $route = new Route($methood, $path, $action);
+        $this->routes[] = $route;
+
+        return $route;
     }
 
-    public function get(string $path, mixed $action)
+    public function get(string $path, mixed $action): RouteInterface
     {
-        $this->addRoute('get', $path, $action);
+        return $this->addRoute('get', $path, $action);
     }
 
-    public function post(string $path, mixed $action)
+    public function post(string $path, mixed $action): RouteInterface
     {
-        $this->addRoute('post', $path, $action);
+        return $this->addRoute('post', $path, $action);
     }
 
-    public function put(string $path, mixed $action)
+    public function put(string $path, mixed $action): RouteInterface
     {
-        $this->addRoute('put', $path, $action);
+        return $this->addRoute('put', $path, $action);
     }
 
-    public function delete(string $path, mixed $action)
+    public function delete(string $path, mixed $action): RouteInterface
     {
-        $this->addRoute('delete', $path, $action);
+        return $this->addRoute('delete', $path, $action);
     }
 
-    public function dispatch(RequestInterface $request): Route
+    public function dispatch(RequestInterface $request): RouteInterface
     {
         $filteredRoutes = array_filter(
             $this->routes,

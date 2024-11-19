@@ -18,6 +18,7 @@ return function (Router $router) {
     $router->get('/teams/{team}/members', [TeamsController::class, 'members']);
 
     $router->get('/projects', [ProjectsController::class, 'index']);
+    $router->get('/projects/create', [ProjectsController::class, 'create']);
 
     $router->get('/auth/register', [RegistrationController::class, 'create']);
     $router->post('/auth/register', [RegistrationController::class, 'store']);

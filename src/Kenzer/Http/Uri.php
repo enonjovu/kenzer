@@ -28,7 +28,7 @@ class Uri implements UriInterface
         return '';
     }
 
-    public function getPort(): int|null
+    public function getPort(): ?int
     {
         return '';
     }
@@ -63,7 +63,7 @@ class Uri implements UriInterface
         return '';
     }
 
-    public function withPort(int|null $port): UriInterface
+    public function withPort(?int $port): UriInterface
     {
         return '';
     }
@@ -78,12 +78,12 @@ class Uri implements UriInterface
         return '';
     }
 
-    public function withUserInfo(string $user, string|null $password = null): UriInterface
+    public function withUserInfo(string $user, ?string $password = null): UriInterface
     {
         return '';
     }
 
-    public function __tostring(): string
+    public function __toString(): string
     {
         return '';
     }

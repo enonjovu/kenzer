@@ -77,8 +77,7 @@ class Response implements ResponseInterface
         private string $content = '',
         private int $statusCode = 200,
         private array $headers = [],
-    ) {
-    }
+    ) {}
 
     public function getContent(): string
     {
@@ -123,6 +122,11 @@ class Response implements ResponseInterface
         $this->headers[$key] = $value;
     }
 
+    public function setEncoding(): static
+    {
+        return $this;
+    }
+
     public function setStatusCode(int $code = 200): void
     {
         $this->statusCode = $code;
@@ -131,7 +135,7 @@ class Response implements ResponseInterface
     protected function sendHeaders(): void
     {
         http_response_code($this->getStatusCode());
-
+        header(sprintf('HTTP/1.1 404 Not Found'));
         foreach ($this->getHeaders() as $key => $value) {
             header(sprintf('%s:%s', $key, $value));
         }

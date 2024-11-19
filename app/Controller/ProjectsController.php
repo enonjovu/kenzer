@@ -10,4 +10,6 @@ class ProjectsController
     {
         return view('pages/projects/index');
     }
+
+    public function create() {}
 }

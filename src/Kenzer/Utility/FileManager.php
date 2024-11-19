@@ -73,7 +73,8 @@ class FileManager
         }
 
         $files = self::getFilesInDirectory($dirPath);
-        return array_filter($files, function($file) use ($extension, $dirPath) {
+
+        return array_filter($files, function ($file) use ($extension) {
             return pathinfo($file, PATHINFO_EXTENSION) === $extension;
         });
     }
@@ -91,29 +92,32 @@ class FileManager
     // Normalize and concatenate paths
     public static function normalizePath(string ...$paths): string
     {
-        $fullPath = join(DIRECTORY_SEPARATOR, $paths);
+        $fullPath = implode(DIRECTORY_SEPARATOR, $paths);
+
         return preg_replace('/[\/\\\\]+/', DIRECTORY_SEPARATOR, $fullPath);
     }
 
     // Join multiple paths considering leading slashes
     public static function joinPaths(string ...$paths): string
     {
-        $normalizedPaths = array_map(function($path) {
-            return trim($path, DIRECTORY_SEPARATOR . '\\');
+        $normalizedPaths = array_map(function ($path) {
+            return trim($path, DIRECTORY_SEPARATOR.'\\');
         }, $paths);
 
-        $fullPath = join(DIRECTORY_SEPARATOR, $normalizedPaths);
+        $fullPath = implode(DIRECTORY_SEPARATOR, $normalizedPaths);
+
         return preg_replace('/[\/\\\\]+/', DIRECTORY_SEPARATOR, $fullPath);
     }
 
     // Join multiple paths while preserving leading slashes
     public static function joinPathsWithLeadingSlashes(string ...$paths): string
     {
-        $normalizedPaths = array_map(function($path) {
-            return ltrim($path, DIRECTORY_SEPARATOR . '\\');
+        $normalizedPaths = array_map(function ($path) {
+            return ltrim($path, DIRECTORY_SEPARATOR.'\\');
         }, $paths);
 
-        $fullPath = join(DIRECTORY_SEPARATOR, $normalizedPaths);
+        $fullPath = implode(DIRECTORY_SEPARATOR, $normalizedPaths);
+
         return preg_replace('/[\/\\\\]+/', DIRECTORY_SEPARATOR, $fullPath);
     }
 }

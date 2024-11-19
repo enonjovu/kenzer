@@ -10,15 +10,15 @@ use InvalidArgumentException;
 use Kenzer\Interface\Data\Arrayable;
 use Kenzer\Interface\Data\Jsonable;
 
-class AttributeBag implements
-    ArrayAccess,
-    Countable,
-    Arrayable,
-    Jsonable
+class AttributeBag implements Arrayable, ArrayAccess, Countable, Jsonable
 {
     public function __construct(
         private array $data = []
-    ) {
+    ) {}
+
+    public static function create(array $data = [])
+    {
+        return new static($data);
     }
 
     public function has(string $key)
@@ -64,6 +64,7 @@ class AttributeBag implements
     {
         return $this->get($offset);
     }
+
     public function offsetSet(mixed $offset, mixed $value): void
     {
         $this->set($offset, $value);
@@ -103,6 +104,7 @@ class AttributeBag implements
     {
         if (! $this->has($key)) {
             $this->set($key, [$data]);
+
             return;
         }
 
@@ -124,5 +126,22 @@ class AttributeBag implements
         }
 
         return $attrs;
+    }
+
+    public function extend(mixed $data)
+    {
+        if (is_array($data)) {
+            $this->data = [...$this->data, ...$data];
+
+            return $this;
+        }
+
+        if ($data instanceof Arrayable) {
+            $this->data = [...$this->data, ...$data->toArray()];
+
+            return $this;
+        }
+
+        throw new InvalidArgumentException('invalid extension data');
     }
 }

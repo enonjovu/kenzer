@@ -100,12 +100,14 @@ class Validator
             foreach ($rules as $rule) {
                 if (is_object($rule) && $rule instanceof RuleInterface) {
                     $compiledRules[$key][] = $rule;
+
                     continue;
                 }
 
                 if (is_string($rule)) {
                     if (class_exists($rule) && Application::getInstance()->get($rule) instanceof RuleInterface) {
                         $compiledRules[$key][] = Application::getInstance()->get($rule);
+
                         continue;
                     }
 
@@ -121,7 +123,7 @@ class Validator
                         $params = explode(',', $params);
                     }
 
-                    $compiledRules[$key][] = $params ? new $this->alias[$rule]($params) : new $this->alias[$rule]();
+                    $compiledRules[$key][] = $params ? new $this->alias[$rule]($params) : new $this->alias[$rule];
                 }
             }
         }

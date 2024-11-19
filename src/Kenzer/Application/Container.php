@@ -13,13 +13,13 @@ use ReflectionMethod;
 class Container
 {
     private array $entries = [];
+
     private array $singletonEntries = [];
 
     /**
      * @template T
      *
-     * @param class-string<T> $id
-     *
+     * @param  class-string<T>  $id
      * @return T
      */
     public function get(string $id)
@@ -145,21 +145,21 @@ class Container
         }
 
         if (! $reflectionClass->isInstantiable()) {
-            throw new ContainerException('Class "' . $id . '" is not instantiable');
+            throw new ContainerException('Class "'.$id.'" is not instantiable');
         }
 
         // 2. Inspect the constructor of the class
         $constructor = $reflectionClass->getConstructor();
 
         if (! $constructor) {
-            return new $id();
+            return new $id;
         }
 
         // 3. Inspect the constructor parameters (dependencies)
         $parameters = $constructor->getParameters();
 
         if (! $parameters) {
-            return new $id();
+            return new $id;
         }
 
         // 4. If the constructor parameter is a class then try to resolve that class using the container
@@ -171,7 +171,7 @@ class Container
     protected function getDependencies(string $id, array $reflectionParameters, array $options = [])
     {
         return array_map(
-            function(\ReflectionParameter $param) use ($id, &$options) {
+            function (\ReflectionParameter $param) use ($id, &$options) {
                 $name = $param->getName();
                 $type = $param->getType();
 
@@ -181,13 +181,13 @@ class Container
 
                 if (! $type) {
                     throw new ContainerException(
-                        'Failed to resolve class "' . $id . '" because param "' . $name . '" is missing a type hint'
+                        'Failed to resolve class "'.$id.'" because param "'.$name.'" is missing a type hint'
                     );
                 }
 
                 if ($type instanceof \ReflectionUnionType) {
                     throw new ContainerException(
-                        'Failed to resolve class "' . $id . '" because of union type for param "' . $name . '"'
+                        'Failed to resolve class "'.$id.'" because of union type for param "'.$name.'"'
                     );
                 }
 
@@ -196,7 +196,7 @@ class Container
                 }
 
                 throw new ContainerException(
-                    'Failed to resolve class "' . $id . '" because invalid param "' . $name . '"'
+                    'Failed to resolve class "'.$id.'" because invalid param "'.$name.'"'
                 );
             },
             $reflectionParameters

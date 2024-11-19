@@ -13,8 +13,11 @@ use Stringable;
 
 class ResponseFactory
 {
-    public static function make(mixed $content = '', int $statuCode = 200, array $headers = [])
-    {
+    public static function make(
+        mixed $content = '',
+        int $statuCode = 200,
+        array $headers = []
+    ) {
         return (new static($content, $statuCode, $headers))->getResponse();
     }
 
@@ -22,8 +25,7 @@ class ResponseFactory
         private mixed $content = '',
         private int $statuCode = 200,
         private array $headers = []
-    ) {
-    }
+    ) {}
 
     public function getResponse(): ResponseInterface
     {

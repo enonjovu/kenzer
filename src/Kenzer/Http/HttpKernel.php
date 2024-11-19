@@ -8,7 +8,6 @@ use Exception;
 use Kenzer\Application\Application;
 use Kenzer\Exception\Http\HttpException;
 use Kenzer\Exception\Http\ValidationException;
-use Kenzer\Interface\Data\Responsable;
 use Kenzer\Interface\Http\HttpKernelInterface;
 use Kenzer\Interface\Http\RequestInterface;
 use Kenzer\Interface\Http\ResponseInterface;
@@ -20,49 +19,63 @@ class HttpKernel implements HttpKernelInterface
 {
     private ResponseInterface $response;
 
+    /**
+     * @var array<class-string>
+     */
+    private array $middlewares;
+
     public function __construct(
         private Application $application,
         private RouterInterface $router,
     ) {
+        /**
+         * @var \Kenzer\Utility\AttributeBag
+         */
+        $config = $application->get('config.app');
+
+        $this->middlewares = $config['middlewares'] ?? [];
     }
 
     public function handleRequest(RequestInterface $request): ResponseInterface
     {
-        $response = null;
+        $initialAction = fn (RequestInterface $r) => $this->createResponse($r);
 
+        $container = $this->application;
+
+        $action = array_reduce(
+            $this->middlewares,
+            fn ($carry, $middleware) => fn (RequestInterface $r) => $container
+                ->get($middleware)
+                ->handle($r, $carry),
+            $initialAction,
+        );
+
+        return $action($request);
+    }
+
+    private function createResponse(RequestInterface $request)
+    {
         try {
             $route = $this->router->dispatch($request);
 
             $actionResult = $this->application->call($route->getAction(), $route->getParams());
 
-            $response = ResponseFactory::make($actionResult);
+            return ResponseFactory::make($actionResult);
         } catch (Exception $e) {
-            if ($e instanceof ValidationException) {
-                return new RedirectResponse('/');
-            }
+            return $this->handleException($e);
+        }
+    }
 
-            if ($e instanceof HttpException) {
-                $errors = sprintf('pages/errors/all', $e->getCode());
-
-                return ResponseFactory::make(View::make($errors, [
-                    'code' => $e->getStatusCode(),
-                    'message' => $e->getMessage(),
-                ]));
-            }
-
-            $response = ResponseFactory::make(new class ($e) implements Responsable {
-                public function __construct(
-                    private Throwable $e,
-                ) {
-                }
-
-                public function toResponse(): ResponseInterface
-                {
-                    return new Response($this->e->getMessage());
-                }
-            });
+    private function handleException(Throwable $throwable): ResponseInterface
+    {
+        if ($throwable instanceof ValidationException) {
+            return new RedirectResponse('/');
         }
 
-        return $response;
+        return ResponseFactory::make(View::make('pages/errors/all', [
+            'code' => $throwable instanceof HttpException ? $throwable->getStatusCode() : $throwable->getCode(),
+            'message' => $throwable->getMessage(),
+            'trace' => $throwable->getTrace(),
+        ]));
     }
 }

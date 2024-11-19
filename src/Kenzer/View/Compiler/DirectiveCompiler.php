@@ -2,21 +2,17 @@
 
 declare(strict_types=1);
 
-namespace Kenzer\View;
+namespace Kenzer\View\Compiler;
 
-class ViewContentCompiler
+use Kenzer\Interface\View\ViewContentCompiler;
+
+class DirectiveCompiler implements ViewContentCompiler
 {
     private static ?ViewContentCompiler $instance = null;
 
-    private function __construct(
+    public function __construct(
         private array $replacements = []
-    ) {
-    }
-
-    public static function create(array $directives = [])
-    {
-        return self::$instance ??= new static($directives);
-    }
+    ) {}
 
     public function addDirective(string $name, callable $callback)
     {
@@ -25,11 +21,13 @@ class ViewContentCompiler
 
     public function process(string $subject): string
     {
+        $directives = implode('|', array_keys($this->replacements));
+
         // Regex to match directives with or without parentheses
-        $pattern = '/@(' . implode('|', array_keys($this->replacements)) . ')(\(\s*(.*?)\s*\))?/';
+        $pattern = '/@('.$directives.')(\(\s*(.*?)\s*\))?/';
 
         // Callback to replace the directive match based on the corresponding logic
-        $callback = function($matches) {
+        $callback = function ($matches) {
             $directive = $matches[1];  // Directive name (e.g., 'if', 'endif')
             $hasExpression = isset($matches[3]);  // Check if an expression exists
             $expression = $hasExpression ? $matches[3] : null;  // Get the expression if it exists

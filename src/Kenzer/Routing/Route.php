@@ -7,13 +7,17 @@ namespace Kenzer\Routing;
 use Kenzer\Interface\Http\RequestInterface;
 use Kenzer\Interface\Routing\RouteInterface;
 
-final class Route implements
-    RouteInterface
+final class Route implements RouteInterface
 {
     private string $method;
+
     private string $path;
+
     private mixed $action;
+
     private array $params;
+
+    private array $middlewares;
 
     public function __construct(
         string $method,
@@ -24,6 +28,7 @@ final class Route implements
         $this->path = $this->compileRoute($path);
         $this->action = $action;
         $this->params = [];
+        $this->middlewares = [];
     }
 
     public function match(string $path): bool
@@ -74,11 +79,27 @@ final class Route implements
     protected function compileRoute($path)
     {
         $path = rtrim($path, '\\');
-        return '#^' . preg_replace('#\{([a-zA-Z0-9_]+)\}#', '(?<$1>[a-zA-Z0-9_]+)', $path) . '$#';
+
+        return '#^'.preg_replace('#\{([a-zA-Z0-9_]+)\}#', '(?<$1>[a-zA-Z0-9_]+)', $path).'$#';
     }
 
     public function getParams(): array
     {
         return $this->params;
+    }
+
+    public function middleware(array $middlewares): self
+    {
+        $this->middlewares = [
+            ...$this->middlewares,
+            ...$middlewares,
+        ];
+
+        return $this;
+    }
+
+    public function getMiddlewares(): array
+    {
+        return $this->middlewares;
     }
 }
