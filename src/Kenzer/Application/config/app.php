@@ -1,8 +1,10 @@
 <?php
 
 return [
-    'middlewares' => [
-        \Kenzer\Http\Middleware\StartSession::class,
-        \Kenzer\Http\Middleware\RecordRequestTime::class,
+    'http' => [
+        'middlewares' => [
+            \Kenzer\Http\Middleware\StartSession::class,
+            \Kenzer\Http\Middleware\RecordRequestTime::class,
+        ],
     ],
 ];

@@ -27,6 +27,11 @@ class Request implements RequestInterface
         return parse_url($_SERVER['REQUEST_URI'], PHP_URL_PATH);
     }
 
+    public function previousUrl()
+    {
+        return $_SERVER['HTTP_REFERER'];
+    }
+
     public function getMethod(): string
     {
         return strtoupper($_SERVER['REQUEST_METHOD']);

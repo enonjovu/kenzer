@@ -21,5 +21,6 @@ class ConfigService implements ApplicationServiceInterface
         });
 
         $this->application->singleton('config.app', fn () => new ConfigLoader(__DIR__.'/../config/app.php'));
+        $this->application->singleton('config.database', fn () => new ConfigLoader(__DIR__.'/../config/database.php'));
     }
 }

@@ -33,7 +33,7 @@ class HttpKernel implements HttpKernelInterface
          */
         $config = $application->get('config.app');
 
-        $this->middlewares = $config['middlewares'] ?? [];
+        $this->middlewares = $config->dot('http.middlewares') ?? [];
     }
 
     public function handleRequest(RequestInterface $request): ResponseInterface

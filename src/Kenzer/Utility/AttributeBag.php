@@ -31,6 +31,33 @@ class AttributeBag implements Arrayable, ArrayAccess, Countable, Jsonable
         return $this->has($key) ? $this->data[$key] : $default;
     }
 
+    public function dot(string $name, mixed $default = null)
+    {
+        $path = explode('.', $name);
+        $value = $this->data[array_shift($path)] ?? null;
+
+        if ($value === null) {
+            return $default;
+        }
+
+        foreach ($path as $key) {
+            if (! isset($value[$key])) {
+                return $default;
+            }
+            $value = $value[$key];
+        }
+
+        return $value;
+    }
+
+    public function hasDot(string $name)
+    {
+        $path = explode('.', $name);
+        $value = $this->data[array_shift($path)] ?? null;
+
+        return $value != null;
+    }
+
     public function set(string $key, mixed $value)
     {
         $this->data[$key] = $value;
