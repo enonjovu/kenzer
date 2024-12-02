@@ -6,15 +6,16 @@ namespace Kenzer\Validation\Rules;
 
 use Kenzer\Interface\Validation\RuleInterface;
 
-class RequiredRule implements RuleInterface
+class EmailRule implements RuleInterface
 {
     public function passes($value) : bool
     {
-        return ! empty($value) && $value !== '';
+
+        return filter_var($value, FILTER_VALIDATE_EMAIL);
     }
 
     public function fail($attribute) : string
     {
-        return "$attribute is required";
+        return "$attribute must be a valid email";
     }
 }

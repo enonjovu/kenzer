@@ -13,18 +13,15 @@ use Kenzer\View\View;
 
 class StartSession implements MiddlewareInterface
 {
-    public function __construct(private Session $session) {}
-
-    public function handle(RequestInterface $request, Closure $next): ResponseInterface
+    public function handle(RequestInterface $request, Closure $next) : ResponseInterface
     {
-
-        $this->session->start();
+        Session::start();
 
         View::putGlobal('hello', 'lol');
 
         $output = $next($request);
 
-        $this->session->save();
+        Session::save();
 
         return $output;
     }

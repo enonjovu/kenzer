@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace App\Controller\Auth;
 
 use Kenzer\Http\Request;
+use Kenzer\Validation\Validator;
 
 class AuthSessionController
 {
@@ -15,8 +16,16 @@ class AuthSessionController
 
     public function store(Request $request)
     {
-        dd($request);
+        $data = $request->validate([
+            'email' => ['required', 'email'],
+            'password' => ['required']
+        ]);
+
+        dd($data);
+
     }
 
-    public function destroy() {}
+    public function destroy()
+    {
+    }
 }

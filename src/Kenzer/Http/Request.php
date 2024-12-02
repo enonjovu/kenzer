@@ -4,14 +4,16 @@ declare(strict_types=1);
 
 namespace Kenzer\Http;
 
+use Kenzer\Application\Session;
 use Kenzer\Interface\Http\RequestInterface;
 use Kenzer\Utility\AttributeBag;
+use Kenzer\Validation\Validator;
 
 class Request implements RequestInterface
 {
     protected AttributeBag $headers;
 
-    protected AttributeBag $data;
+    public readonly AttributeBag $data;
 
     public function __construct()
     {
@@ -22,7 +24,7 @@ class Request implements RequestInterface
         ]);
     }
 
-    public function getPath(): string
+    public function getPath() : string
     {
         return parse_url($_SERVER['REQUEST_URI'], PHP_URL_PATH);
     }
@@ -32,12 +34,12 @@ class Request implements RequestInterface
         return $_SERVER['HTTP_REFERER'];
     }
 
-    public function getMethod(): string
+    public function getMethod() : string
     {
         return strtoupper($_SERVER['REQUEST_METHOD']);
     }
 
-    public function getUrl(): string
+    public function getUrl() : string
     {
         $host = sprintf('%s://%s',
             (isset($_SERVER['HTTPS']) && $_SERVER['HTTPS'] === 'on' ? 'https' : 'http'),
@@ -48,7 +50,7 @@ class Request implements RequestInterface
 
     }
 
-    public function protocalVersion(): string
+    public function protocalVersion() : string
     {
         return $_SERVER['SERVER_PROTOCOL'] ?? 'HTTP/1.1';
     }
@@ -67,8 +69,21 @@ class Request implements RequestInterface
         return $headers;
     }
 
-    public function methodIs(string $method): bool
+    public function methodIs(string $method) : bool
     {
         return $this->getMethod() == strtoupper($method);
+    }
+
+    public function validate(array $rules)
+    {
+        $validator = Validator::create($this->data->toArray(), $rules);
+
+        $validator->validate();
+
+        if ($validator->failed()) {
+            Session::flash('errors', $validator->getErrors());
+        }
+
+        return $validator->safe();
     }
 }

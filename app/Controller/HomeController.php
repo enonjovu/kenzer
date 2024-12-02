@@ -17,5 +17,7 @@ class HomeController
         return View::make('pages/home', ['name' => 'enoch']);
     }
 
-    public function somepoint(Request $request) {}
+    public function somepoint(Request $request)
+    {
+    }
 }

@@ -4,7 +4,7 @@
     <!-- Email Address -->
     <div class="grid gap-1">
         <label for="email" class="block font-medium text-sm text-gray-700">Email</label>
-        <input type="email" required
+        <input type="email"
             class="border-gray-300 px-3 py-2 block w-full border  focus:border-indigo-500 focus:ring-indigo-500 rounded-md shadow-sm"
             name="email" id="email" />
 
@@ -12,7 +12,7 @@
 
     <div class="mt-4 grid gap-1">
         <label for="password" class="block font-medium text-sm text-gray-700">Password</label>
-        <input type="password" required
+        <input type="password"
             class="border-gray-300 px-3 py-2 block w-full border  focus:border-indigo-500 focus:ring-indigo-500 rounded-md shadow-sm"
             name="password" id="password" />
     </div>

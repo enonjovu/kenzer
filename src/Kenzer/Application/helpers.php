@@ -2,14 +2,15 @@
 
 declare(strict_types=1);
 
+use Kenzer\Application\Application;
 use Kenzer\View\View;
 
-function view(string $path, array $options = []): View
+function view(string $path, array $options = []) : View
 {
     return View::make($path, $options);
 }
 
-function safeHtml(mixed $subject): string
+function safeHtml(mixed $subject) : string
 {
     if (is_numeric($subject)) {
         $subject = (string) $subject;
@@ -26,4 +27,14 @@ function with(array $data, callable $callback)
 {
     extract($data);
     $callback();
+}
+
+
+function container(?string $binding = null)
+{
+    if ($binding == null) {
+        return Application::getInstance();
+    }
+
+    return Application::getInstance()->get($binding);
 }

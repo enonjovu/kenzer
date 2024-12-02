@@ -4,130 +4,96 @@ declare(strict_types=1);
 
 namespace Kenzer\Validation;
 
+use Exception;
 use Kenzer\Application\Application;
 use Kenzer\Exception\Http\ValidationException;
 use Kenzer\Interface\Validation\RuleInterface;
+use Kenzer\Utility\ArrayHelper;
 
 class Validator
 {
-    private array $alias = [
-        'required' => \Kenzer\Validation\Rules\RequiredRule::class,
-    ];
-
-    private array $errors = [];
-
-    /**
-     * @var array<string,RuleInterface>
-     */
-    private array $compiledRules = [];
+    private array $errors;
 
     public function __construct(
-        private $data = [],
-        private $rules = [],
+        protected array $data,
+        protected array $rules,
     ) {
         $this->errors = [];
-        $this->compiledRules = $this->processRules();
     }
 
-    public function validate(string $field)
+    protected function ruleAlias()
     {
-        $this->errors[$field] = [];
-
-        $value = $this->data[$field];
-        $rules = $this->compiledRules[$field];
-
-        foreach ($rules as $rule) {
-            if (! $rule->passes($value)) {
-                $this->errors[$field][] = $rule->fail($field);
-            }
-        }
-
-        if (empty($this->errors[$field])) {
-            unset($this->errors[$field]);
-        }
-
-        return $this;
+        return [
+            'required' => \Kenzer\Validation\Rules\RequiredRule::class,
+            'email' => \Kenzer\Validation\Rules\EmailRule::class,
+        ];
     }
 
-    public function hasErrors()
-    {
-        return ! empty($this->errors);
-    }
-
-    public function hasFieldError(string $name)
-    {
-        return ! empty($this->getFieldErrors($name));
-    }
-
-    public function getErrors()
-    {
-        return $this->errors;
-    }
-
-    public function getFieldErrors(string $name)
-    {
-        return $this->errors[$name] ?? [];
-    }
-
-    public function validated()
-    {
-        $data = [];
-
-        foreach ($this->data as $key => $value) {
-            $this->validate($key);
-        }
-
-        if ($this->hasErrors()) {
-            throw ValidationException::create(
-                $this->data,
-                $this->errors
-            );
-        }
-
-        return array_intersect_key($this->data, $this->errors);
-    }
-
-    public static function create($data = [], $rules = []): static
+    public static function create(array $data = [], array $rules = []) : static
     {
         return new static($data, $rules);
     }
 
-    private function processRules()
+    public function validate()
     {
-        $compiledRules = [];
+        foreach ($this->rules as $field => $rules) {
+            $value = $this->data[$field] ?? null;
 
-        foreach ($this->rules as $key => $rules) {
-            foreach ($rules as $rule) {
-                if (is_object($rule) && $rule instanceof RuleInterface) {
-                    $compiledRules[$key][] = $rule;
+            foreach ($rules as $validationRule) {
+                $validationRule = $this->parseRule($validationRule);
 
+                if ($validationRule->passes($value)) {
                     continue;
                 }
 
-                if (is_string($rule)) {
-                    if (class_exists($rule) && Application::getInstance()->get($rule) instanceof RuleInterface) {
-                        $compiledRules[$key][] = Application::getInstance()->get($rule);
-
-                        continue;
-                    }
-
-                    if (! array_key_exists($rule, $this->alias)) {
-                        continue;
-                    }
-
-                    [$rule, $params] = explode(':', $rule, 2);
-
-                    $params ??= [];
-
-                    if (is_string($params)) {
-                        $params = explode(',', $params);
-                    }
-
-                    $compiledRules[$key][] = $params ? new $this->alias[$rule]($params) : new $this->alias[$rule];
-                }
+                $this->addError($field, $validationRule->fail($field));
             }
+
+        }
+    }
+
+    public function safe()
+    {
+        $errorFields = array_keys($this->getErrors());
+
+        return ArrayHelper::where($this->data, fn ($v, $k) => ! in_array($k, $errorFields));
+    }
+
+    private function parseRule(mixed $rule) : RuleInterface
+    {
+        if ($rule instanceof RuleInterface) {
+            return $rule;
         }
 
-        return $compiledRules;
+
+        if (is_string($rule) && class_exists($rule)) {
+            $rule = container($rule);
+
+            if ($rule instanceof RuleInterface) {
+                return $rule;
+            }
+            throw new Exception('failed to parse rule ' . $rule);
+        }
+
+        if (is_string($rule) && array_key_exists($rule, $this->ruleAlias())) {
+            return container($this->ruleAlias()[$rule]);
+        }
+
+        throw new Exception('failed to parse rule ' . $rule);
+    }
+
+    public function addError(string $field, string $message)
+    {
+        $this->errors[$field][] = $message;
+    }
+
+    public function failed()
+    {
+        return ! empty($this->errors);
+    }
+
+    public function getErrors()
+    {
+        return ArrayHelper::where($this->errors, fn ($value, $key) => ! empty ($value));
     }
 }

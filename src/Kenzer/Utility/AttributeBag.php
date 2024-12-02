@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace Kenzer\Utility;
 
 use ArrayAccess;
+use Closure;
 use Countable;
 use InvalidArgumentException;
 use Kenzer\Interface\Data\Arrayable;
@@ -14,7 +15,8 @@ class AttributeBag implements Arrayable, ArrayAccess, Countable, Jsonable
 {
     public function __construct(
         private array $data = []
-    ) {}
+    ) {
+    }
 
     public static function create(array $data = [])
     {
@@ -58,6 +60,12 @@ class AttributeBag implements Arrayable, ArrayAccess, Countable, Jsonable
         return $value != null;
     }
 
+    public function map(Closure $callback)
+    {
+        $this->data = ArrayHelper::map($this->toArray(), $callback);
+        return $this;
+    }
+
     public function set(string $key, mixed $value)
     {
         $this->data[$key] = $value;
@@ -72,42 +80,42 @@ class AttributeBag implements Arrayable, ArrayAccess, Countable, Jsonable
         }
     }
 
-    public function getBoolean(string $key, bool $default = false): bool
+    public function getBoolean(string $key, bool $default = false) : bool
     {
         return $this->has($key) ? (bool) $this->data[$key] : $default;
     }
 
-    public function getNumber(string $key, ?int $default = null): ?int
+    public function getNumber(string $key, ?int $default = null) : ?int
     {
         return $this->has($key) ? (int) $this->data[$key] : $default;
     }
 
-    public function offsetExists(mixed $offset): bool
+    public function offsetExists(mixed $offset) : bool
     {
         return $this->has($offset);
     }
 
-    public function offsetGet(mixed $offset): mixed
+    public function offsetGet(mixed $offset) : mixed
     {
         return $this->get($offset);
     }
 
-    public function offsetSet(mixed $offset, mixed $value): void
+    public function offsetSet(mixed $offset, mixed $value) : void
     {
         $this->set($offset, $value);
     }
 
-    public function offsetUnset(mixed $offset): void
+    public function offsetUnset(mixed $offset) : void
     {
         $this->remove($offset);
     }
 
-    public function count(): int
+    public function count() : int
     {
         return count($this->data);
     }
 
-    public function isEmpty(): bool
+    public function isEmpty() : bool
     {
         return empty($this->data);
     }
@@ -117,12 +125,12 @@ class AttributeBag implements Arrayable, ArrayAccess, Countable, Jsonable
         return $this->has($key) ? $this[$key] != null : true;
     }
 
-    public function toArray(): array
+    public function toArray() : array
     {
         return $this->data;
     }
 
-    public function toJson(): string
+    public function toJson() : string
     {
         return json_encode($this->data);
     }
